@@ -1,0 +1,22 @@
+{
+  "name": "node-basico",
+  "version": "1.0.0",
+  "description": "tutorial",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gustavorech/node-basico.git"
+  },
+  "author": "Gustavo Rech",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gustavorech/node-basico/issues"
+  },
+  "homepage": "https://github.com/gustavorech/node-basico#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
