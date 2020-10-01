@@ -2,6 +2,13 @@ const express = require('express');
 const app = express();
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+
+mongoose.connect(
+    'mongodb+srv://node-basico:' + 
+        process.env.MONGO_PASSWORD + 
+        '@cluster0.ev0v3.mongodb.net/nodeBasico?retryWrites=true&w=majority'
+);
 
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({extended: false}));

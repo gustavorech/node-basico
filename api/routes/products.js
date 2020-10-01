@@ -1,49 +1,84 @@
+const { request } = require('express');
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
 
-router.get('/', (request, response, next) => {
-    response.status(200).json({
-        message: 'Handling GET request to /products'
-    });
+const Product = require('../models/product');
+
+router.get('/', async (request, response, next) => {
+    try {
+        const products = await Product.find().exec();
+        console.log(products);
+
+        response.status(200).json(products);
+    } catch (error) {
+        console.log(error);
+        response.status(500).json({error: error});
+    }
 });
 
-router.post('/', (request, response, next) => {
-    const product = {
+router.post('/', async (request, response, next) => {
+    const product = new Product({
+        _id: mongoose.Types.ObjectId(),
         name: request.body.name,
         price: request.body.price
-    }
-    response.status(200).json({
-        message: 'Handling POST request to /products',
-        createdProduct: product
     });
+
+    try {
+        await product.save();
+        console.log(product);
+
+        response.status(200).json({createdProduct: product});
+    } catch(error) {
+        console.log(error);
+        response.status(500).json({error: error});
+    }
 });
 
-router.get('/:productId', (request, response, next) => {
+router.get('/:productId', async (request, response, next) => {
     const id = request.params.productId;
-    if (id === 'special') {
-        response.status(200).json({
-            message: 'You discovered the special ID',
-            id: id
-        });
-    }
-    else {
-        response.status(200).json({
-            message: 'You passed an ID',
-            id: id
-        });
+
+    try {
+        const product = await Product.findById(id).exec();
+
+        if (product) {
+            response.status(200).json(product);
+        } else {
+            response.status(404).json({message: 'Not found'});
+        }
+
+    } catch (error) {
+        console.log(error);
+        response.status(500).json({error: error});
     }
 });
 
-router.patch('/', (request, response, next) => {
-    response.status(200).json({
-        message: 'Updated product',
-    });
+router.patch('/:productId', async (request, response, next) => {
+    const id = request.params.productId;
+
+    try {
+        const result = await Product.update({_id: id}, {$set: request.body});
+        console.log(result);
+
+        response.status(200).json(result);
+    } catch(error) {
+        console.log(error);
+
+        response.status(500).json({error: error});
+    }
 });
 
-router.delete('/', (request, response, next) => {
-    response.status(200).json({
-        message: 'Deleted product',
-    });
+router.delete('/:productId', async (request, response, next) => {
+    const id = request.params.productId;
+
+    try {
+        const result = await Product.remove({_id: id}).exec();
+        response.status(200).json(result);
+
+    } catch (error) {
+        console.log(error);
+        response.status(500).json({error: error});
+    }
 });
 
 module.exports = router;
