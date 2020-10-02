@@ -8,9 +8,15 @@ const Product = require('../models/product');
 router.get('/', async (request, response, next) => {
     try {
         const products = await Product.find().exec();
+
+        const responseData = {
+            count: products.length,
+            data: products
+        }
+
         console.log(products);
 
-        response.status(200).json(products);
+        response.status(200).json(responseData);
     } catch (error) {
         console.log(error);
         response.status(500).json({error: error});
@@ -28,7 +34,7 @@ router.post('/', async (request, response, next) => {
         await product.save();
         console.log(product);
 
-        response.status(200).json({createdProduct: product});
+        response.status(201).json({_id: product._id});
     } catch(error) {
         console.log(error);
         response.status(500).json({error: error});
