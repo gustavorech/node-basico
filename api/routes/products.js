@@ -1,90 +1,17 @@
-const { request } = require('express');
+
 const express = require('express');
 const router = express.Router();
-const mongoose = require('mongoose');
 
-const Product = require('../models/product');
+const ProductController = require('../controllers/products');
 
-router.get('/', async (request, response, next) => {
-    try {
-        const products = await Product.find().exec();
+router.get('/', ProductController.get_all);
 
-        const responseData = {
-            count: products.length,
-            data: products
-        }
+router.post('/', ProductController.create);
 
-        console.log(products);
+router.get('/:productId', ProductController.get);
 
-        response.status(200).json(responseData);
-    } catch (error) {
-        console.log(error);
-        response.status(500).json({error: error});
-    }
-});
+router.patch('/:productId', ProductController.update);
 
-router.post('/', async (request, response, next) => {
-    const product = new Product({
-        _id: mongoose.Types.ObjectId(),
-        name: request.body.name,
-        price: request.body.price
-    });
-
-    try {
-        await product.save();
-        console.log(product);
-
-        response.status(201).json({_id: product._id});
-    } catch(error) {
-        console.log(error);
-        response.status(500).json({error: error});
-    }
-});
-
-router.get('/:productId', async (request, response, next) => {
-    const id = request.params.productId;
-
-    try {
-        const product = await Product.findById(id).exec();
-
-        if (product) {
-            response.status(200).json(product);
-        } else {
-            response.status(404).json({message: 'Not found'});
-        }
-
-    } catch (error) {
-        console.log(error);
-        response.status(500).json({error: error});
-    }
-});
-
-router.patch('/:productId', async (request, response, next) => {
-    const id = request.params.productId;
-
-    try {
-        const result = await Product.update({_id: id}, {$set: request.body});
-        console.log(result);
-
-        response.status(200).json(result);
-    } catch(error) {
-        console.log(error);
-
-        response.status(500).json({error: error});
-    }
-});
-
-router.delete('/:productId', async (request, response, next) => {
-    const id = request.params.productId;
-
-    try {
-        const result = await Product.remove({_id: id}).exec();
-        response.status(200).json(result);
-
-    } catch (error) {
-        console.log(error);
-        response.status(500).json({error: error});
-    }
-});
+router.delete('/:productId', ProductController.delete);
 
 module.exports = router;
